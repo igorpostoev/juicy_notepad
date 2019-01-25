@@ -1,0 +1,5 @@
+*.iml
+*.pro
+/build
+/libs
+README.md
