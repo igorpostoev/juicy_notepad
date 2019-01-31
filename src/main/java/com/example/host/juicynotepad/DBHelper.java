@@ -17,7 +17,8 @@ public class DBHelper extends SQLiteOpenHelper {
         // создаем таблицу с полями
         sqLiteDatabase.execSQL("create table notes_table ("
                 + "id integer primary key autoincrement,"
-                + "note text,"
+                + "data text,"
+                + "preview text,"
                 + "time text" + ");");
     }
 

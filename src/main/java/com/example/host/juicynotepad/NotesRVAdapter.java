@@ -1,8 +1,8 @@
 package com.example.host.juicynotepad;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,12 +11,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.List;
 
-
 public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteViewHolder> {
     private List<Note> notes;
-    NotesRVAdapter(List<Note> notes){
+    private Context mContext;
+
+    NotesRVAdapter(List<Note> notes, MainActivity mContext){
         this.notes = notes;
+        this.mContext = mContext;
     }
+
 
     @Override
     public int getItemCount() {
@@ -27,12 +30,14 @@ public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteView
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_note,viewGroup,false);
+        v.setTag(notes.get(i).id);
+
         return new NoteViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder noteVH, int i) {
-        noteVH.tvData.setText(notes.get(i).data);
+        noteVH.tvData.setText(notes.get(i).preview);
         noteVH.tvTime.setText(notes.get(i).time);
     }
 
@@ -53,7 +58,7 @@ public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteView
 
         private final int verticalSpaceHeight;
 
-        public VerticalItemDecoration(int verticalSpaceHeight) {
+        VerticalItemDecoration(int verticalSpaceHeight) {
             this.verticalSpaceHeight = verticalSpaceHeight;
         }
 
@@ -61,6 +66,15 @@ public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteView
         public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
                                    RecyclerView.State state) {
             outRect.bottom = verticalSpaceHeight;
+        }
+    }
+
+    class CustomOnClickListener implements View.OnClickListener{
+        @Override
+        public void onClick(View view) {
+            Intent intent = new Intent(mContext, NoteActivity.class);
+            intent.putExtra("id", view.getTag().toString());
+            mContext.startActivity(intent);
         }
     }
 }

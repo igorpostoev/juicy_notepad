@@ -3,8 +3,12 @@ package com.example.host.juicynotepad;
 public class Note {
     String data;
     String time;
-    Note(String d, String t){
-        this.data = d;
+    String preview;
+    int id;
+
+    Note(int id, String t, String p){
+        this.id = id;
         this.time = t;
+        this.preview = p;
     }
 }

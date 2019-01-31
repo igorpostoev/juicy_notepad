@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">JuicyNotepad</string>
+    <string name="table_name">notes_table</string>
 </resources>

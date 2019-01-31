@@ -7,9 +7,10 @@
     tools:context=".NoteActivity">
 
     <EditText
+    android:id="@+id/etEditNote"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:inputType="text"
-        android:gravity="top"/>
+    android:gravity="top"/>
 
 </android.support.constraint.ConstraintLayout>
