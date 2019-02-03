@@ -13,27 +13,30 @@ import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ListView;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.zip.Inflater;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import static com.example.host.juicynotepad.Helper.clearDB;
+import static com.example.host.juicynotepad.Helper.db;
+import static com.example.host.juicynotepad.Helper.dbHelper;
+import static com.example.host.juicynotepad.Helper.mAdapter;
+import static com.example.host.juicynotepad.Helper.noteList;
+import static com.example.host.juicynotepad.Helper.readFromDB;
+import static com.example.host.juicynotepad.Helper.tableName;
+
+
+public class MainActivity extends AppCompatActivity implements  NotesRVAdapter.Selectable {
     RecyclerView rvMain;
     ImageButton imgBut;
-    DBHelper dbHelper;
-    SQLiteDatabase db;
-    List<Note> noteList = new ArrayList<>();
-    String tableName;
+    boolean isSelection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final NotesRVAdapter notesAdapter;
 
         if(getSupportActionBar()!=null) {
             getSupportActionBar().setElevation(0);
@@ -42,53 +45,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imgBut = findViewById(R.id.imgBtn);
         rvMain = findViewById(R.id.rvMain);
 
-        imgBut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NoteActivity.class);
-                startActivity(intent);
-            }
-        });
-
         dbHelper = new DBHelper(this);
         db = dbHelper.getWritableDatabase();
         tableName = getString(R.string.table_name);
+        noteList = readFromDB();
 
-        String data = "bla bla bla bla" + "\n" + "bla1 bla1 bla1";
-        String time = "21.01.2017 23:00:01";
-        ContentValues cv = new ContentValues();
-
-            cv.put("data", data);
-            cv.put("time", time);
-            cv.put("preview", data.split("\n")[0]);
-
-        Helper.DBInsert insertObj = new Helper.DBInsert();
-        insertObj.execute(db,tableName, cv);
-
-        Helper.DBReadAllPre readAll = new Helper.DBReadAllPre();
-
-        readAll.execute(db, tableName);
-
-        try{
-            noteList = readAll.get();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        NotesRVAdapter notesAdapter = new NotesRVAdapter(noteList, this);
+        notesAdapter = new NotesRVAdapter(noteList, this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         NotesRVAdapter.VerticalItemDecoration decoration = new NotesRVAdapter.VerticalItemDecoration(15);
         rvMain.addItemDecoration(decoration);
         rvMain.setLayoutManager(llm);
         rvMain.setAdapter(notesAdapter);
 
-        Helper.noteList = noteList;
         Helper.mAdapter = notesAdapter;
+
+        imgBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            if(!isSelection){
+                Intent intent = new Intent(MainActivity.this, NoteActivity.class);
+                startActivity(intent);
+
+            } else {
+                setSelectionMode(false);
+                List<Note> listToDelete = Helper.mAdapter.getSelectedItems();
+                Helper.DBDelete dbDelete = new Helper.DBDelete();
+                dbDelete.execute(tableName, listToDelete);
+            }
+            }
+        });
     }
 
-    @Override
-    public void onClick(View v){
+    public void setSelectionMode(boolean isActivated){
+        ImageButton imgBtn = findViewById(R.id.imgBtn);
+        isSelection = isActivated;
+        if(isActivated){
+            imgBtn.setImageResource(R.drawable.garbage);
+        } else {
+            imgBtn.setImageResource(R.drawable.add_black);
+        }
+    }
 
+    public boolean isSelectionMode(){
+        return isSelection;
     }
 
     private void setLocale(Locale locale){
@@ -102,5 +101,3 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 }
-
-

@@ -14,18 +14,29 @@ import java.util.Locale;
 
 public class NoteActivity extends AppCompatActivity {
     EditText etData;
-    DBHelper dbHelper;
-    SQLiteDatabase sdb;
     String id;
+    String tableName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
+        etData = findViewById(R.id.etEditNote);
+        tableName = getString(R.string.table_name);
+
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
-        etData = findViewById(R.id.etEditNote);
-        dbHelper = new DBHelper(this);
-        sdb = dbHelper.getWritableDatabase();
+
+        if(id != null) {
+            Helper.DBReadSingleData dBread = new Helper.DBReadSingleData();
+            dBread.execute(tableName, Integer.parseInt(id));
+            try {
+                etData.setText(dBread.get());
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -35,36 +46,23 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-       if(id.isEmpty()) {
-           Log.d("Log_NOTES_ACTIVITY", "DESTROYED");
-           //TODO: connection to db on another thread!
-           //Определиться, как выводить первую строку в списке заметок:  хранить в базе первую строку отдельно в пале типа brief_text или как-то иначе.
 
-           ContentValues cv = new ContentValues();
-           SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
+        ContentValues cv = new ContentValues();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
+        String data = etData.getText().toString();
 
-
-           String data = etData.getText().toString();
-           if (!data.isEmpty()) {
-               String time = sdf.format(new Date());
-               cv.put("data", data);
-               cv.put("time", time);
-               cv.put("preview", data.split("\n")[0]);
-           }
-           Helper.DBInsert insertObj = new Helper.DBInsert();
-           insertObj.execute(sdb, cv);
-       }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("LOg_NOTES_ACTIVITY", "PAUSED");
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("LOg_NOTES_ACTIVITY", "STOPPED");
-        super.onStop();
+        if (!data.isEmpty()) {
+            String time = sdf.format(new Date());
+            cv.put("data", data);
+            cv.put("time", time);
+            cv.put("preview", data.split("\n")[0]);
+            if(id == null) {
+                Helper.DBInsert insertObj = new Helper.DBInsert();
+                insertObj.execute(tableName, cv);
+            } else {
+                Helper.DBUpdate updateObj = new Helper.DBUpdate();
+                updateObj.execute(tableName, cv, id);
+            }
+        }
     }
 }
