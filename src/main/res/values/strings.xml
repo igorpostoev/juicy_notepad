@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">JuicyNotepad</string>
     <string name="table_name">notes_table</string>
+    <string name="db_version">1</string>
+    <string name="img_btn_desc">Sample Description</string>
 </resources>

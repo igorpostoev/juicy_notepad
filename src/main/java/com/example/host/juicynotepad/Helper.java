@@ -1,12 +1,20 @@
 package com.example.host.juicynotepad;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 class Helper {
     static DBHelper dbHelper;
@@ -102,6 +110,7 @@ class Helper {
         String tableName;
         List<Note> noteList;
 
+
         @Override
         protected List<Note> doInBackground(Object... objects) {
 
@@ -120,6 +129,7 @@ class Helper {
 
                     int id = c.getInt(idIndex);
                     String time = c.getString(idTime);
+                    time = formatDateTime(time);
                     String preview = c.getString(idPre);
 
                     noteList.add(new Note(id, time, preview));
@@ -201,4 +211,55 @@ class Helper {
         Helper.DBClear ereseAll = new  Helper.DBClear();
         ereseAll.execute(tableName);
     }
+
+    private static String formatDateTime(String timeToFormat){
+
+        Locale locale = new Locale("ru", "RU");
+
+        SimpleDateFormat iso8601Format = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.US);
+
+        Calendar calendarCurrent = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
+
+        Date date = null;
+        SimpleDateFormat hrFormat = null;
+
+        if (timeToFormat != null) {
+            try {
+                calendar.setTime(iso8601Format.parse(timeToFormat));
+            } catch (ParseException e) {
+               e.getErrorOffset();
+            }
+
+            if(calendar.get(Calendar.YEAR)==calendarCurrent.get(Calendar.YEAR)){
+
+                hrFormat = new SimpleDateFormat(
+                        "MM-dd HH:mm", locale);
+            } else {
+
+                hrFormat = new SimpleDateFormat(
+                        "yyyy-MM-dd HH:mm", locale);
+            }
+
+            date  = calendar.getTime();
+
+            return  hrFormat.format(date);
+
+        } else {
+            throw new NullPointerException("InputStringCannotBeEmpty");
+        }
+    }
+
+    static String getCurISODateTime(){
+        String finalDateTime = "";
+
+        SimpleDateFormat iso8601Format = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.US);
+
+
+        finalDateTime = iso8601Format.format(Calendar.getInstance().getTime());
+        return finalDateTime;
+    }
+  
 }

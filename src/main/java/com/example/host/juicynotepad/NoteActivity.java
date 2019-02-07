@@ -1,6 +1,7 @@
 package com.example.host.juicynotepad;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
@@ -8,9 +9,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class NoteActivity extends AppCompatActivity {
     EditText etData;
@@ -48,11 +52,11 @@ public class NoteActivity extends AppCompatActivity {
         super.onDestroy();
 
         ContentValues cv = new ContentValues();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US);
+
         String data = etData.getText().toString();
 
         if (!data.isEmpty()) {
-            String time = sdf.format(new Date());
+            String time = Helper.getCurISODateTime();
             cv.put("data", data);
             cv.put("time", time);
             cv.put("preview", data.split("\n")[0]);
@@ -65,4 +69,6 @@ public class NoteActivity extends AppCompatActivity {
             }
         }
     }
+
+
 }

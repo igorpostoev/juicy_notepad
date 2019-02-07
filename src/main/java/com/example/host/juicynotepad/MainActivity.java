@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements  NotesRVAdapter.S
         tableName = getString(R.string.table_name);
         noteList = readFromDB();
 
+
         notesAdapter = new NotesRVAdapter(noteList, this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         NotesRVAdapter.VerticalItemDecoration decoration = new NotesRVAdapter.VerticalItemDecoration(15);

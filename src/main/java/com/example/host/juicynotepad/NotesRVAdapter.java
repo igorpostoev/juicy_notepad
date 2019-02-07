@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,13 @@ public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteView
         NoteViewHolder(View itemView, final MainActivity mContext){
             super(itemView);
 
+            float density = mContext.getResources().getDisplayMetrics().density;
+            float pixels = mContext.getResources().getInteger(R.integer.rvItemHeigth);
+            int height  = Math.round(pixels*density);
+            int margin_bottom = mContext.getResources().getInteger(R.integer.rvItemMarginBottom);
+            LinearLayout.LayoutParams bottomMargin = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+            bottomMargin.setMargins(0,0, 0, margin_bottom);
+
             tvData = itemView.findViewById(R.id.tvNoteData);
             tvTime = itemView.findViewById(R.id.tvNoteTime);
             checkBox = itemView.findViewById(R.id.chSelect);
@@ -95,6 +103,8 @@ public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteView
                     mContext.startActivity(intent);
                 }
             });
+
+            itemView.setLayoutParams(bottomMargin);
 
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
