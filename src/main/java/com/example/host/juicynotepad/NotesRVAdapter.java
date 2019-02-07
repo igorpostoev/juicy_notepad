@@ -37,9 +37,10 @@ public class NotesRVAdapter extends RecyclerView.Adapter<NotesRVAdapter.NoteView
 
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder noteVH, int position) {
-        noteVH.tvData.setText(notes.get(position).preview);
-        noteVH.tvTime.setText(notes.get(position).time);
-        noteVH.itemView.setTag(notes.get(position).id);
+        Note note = notes.get(Helper.curRowCount - position - 1 );
+        noteVH.tvData.setText(note.preview);
+        noteVH.tvTime.setText(note.time);
+        noteVH.itemView.setTag(note.id);
 
         if(mContext.isSelectionMode()){
             noteVH.note = notes.get(position);

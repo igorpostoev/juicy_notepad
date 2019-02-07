@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements  NotesRVAdapter.S
             } else {
                 setSelectionMode(false);
                 List<Note> listToDelete = Helper.mAdapter.getSelectedItems();
-                Helper.DBDelete dbDelete = new Helper.DBDelete();
+                ReqHelper.DBDelete dbDelete = new ReqHelper.DBDelete();
                 dbDelete.execute(tableName, listToDelete);
             }
             }

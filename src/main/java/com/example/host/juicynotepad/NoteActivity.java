@@ -33,7 +33,7 @@ public class NoteActivity extends AppCompatActivity {
         id = intent.getStringExtra("id");
 
         if(id != null) {
-            Helper.DBReadSingleData dBread = new Helper.DBReadSingleData();
+            ReqHelper.DBReadSingleData dBread = new ReqHelper.DBReadSingleData();
             dBread.execute(tableName, Integer.parseInt(id));
             try {
                 etData.setText(dBread.get());
@@ -61,14 +61,12 @@ public class NoteActivity extends AppCompatActivity {
             cv.put("time", time);
             cv.put("preview", data.split("\n")[0]);
             if(id == null) {
-                Helper.DBInsert insertObj = new Helper.DBInsert();
+                ReqHelper.DBInsert insertObj = new ReqHelper.DBInsert();
                 insertObj.execute(tableName, cv);
             } else {
-                Helper.DBUpdate updateObj = new Helper.DBUpdate();
+                ReqHelper.DBUpdate updateObj = new ReqHelper.DBUpdate();
                 updateObj.execute(tableName, cv, id);
             }
         }
     }
-
-
 }
